@@ -68,6 +68,7 @@ def parse_backup_args():
                                                  'Writes encrypted duplicty, maintains rotating logs of the progress '
                                                  'and notifies via telegram upon error')
 
+    parser.add_argument('gpg-key', action='store', help='gpg key to encrypt the backup with')
     parser.add_argument('source', action='store', help='the directory to back up')
     parser.add_argument('host-destination', action='store', help='the host to backup to and the destination. In the'
                                                                  'format used by duplicity, for example: '
@@ -111,8 +112,9 @@ def parse_backup_args():
 def run_backup():
     args = parse_backup_args()
 
+    gpg_key = args.gpg_key
     backup_source = args.source
-    backup_destination = args.destination
+    backup_destination = args.host_destination
 
     if args.telegram_notifications:
         tclient = TeleGramClient(args.telegram_bot_token, args.telegram_chat_id)
@@ -129,7 +131,7 @@ def run_backup():
 
     rootlogger.info(f"Starting duplicity backup of {backup_source} to {backup_destination}")
 
-    output = run_duplicity_backup(backup_source, backup_destination, rootlogger)
+    output = run_duplicity_backup(gpg_key, backup_source, backup_destination, rootlogger)
 
     output.wait()
 
