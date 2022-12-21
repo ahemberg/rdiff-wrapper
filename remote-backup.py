@@ -8,6 +8,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import socket
 import argparse
+import os
 
 
 def configure_logger(log_path: str, loglevel=logging.INFO):
@@ -35,8 +36,14 @@ def log_subprocess_error(pipe, logger):
         logger.error(str(line.decode("utf-8").strip()))
 
 
-def run_duplicity_backup(gpg_key_id: str, source_path: str, destination_path: str, logger):
+def run_duplicity_backup(gpg_key_id: str, gpg_passphrase: str, source_path: str, destination_path: str, logger):
     #duplicity --encrypt-key C1F8301F8E3FE201FB1AC236E967107FB4F484C8 wave-reader/ sftp://alex@localhost:7000//home/alex
+
+    env = {
+        **os.environ,
+        "PASSPHRASE": str(1234),
+    }
+
     command = [
         'duplicity',
         '-v',
@@ -46,7 +53,7 @@ def run_duplicity_backup(gpg_key_id: str, source_path: str, destination_path: st
         source_path,
         destination_path
     ]
-    output = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
 
     with output.stdout:
         log_subprocess_output(output.stdout, logger)
@@ -69,6 +76,7 @@ def parse_backup_args():
                                                  'and notifies via telegram upon error')
 
     parser.add_argument('gpg_key', action='store', help='gpg key to encrypt the backup with')
+    parser.add_argument('gpg_pass', action='store', help='path to file containing the passphrase of the gpg-key')
     parser.add_argument('source', action='store', help='the directory to back up')
     parser.add_argument('host_destination', action='store', help='the host to backup to and the destination. In the'
                                                                  'format used by duplicity, for example: '
@@ -116,6 +124,9 @@ def run_backup():
     backup_source = args.source
     backup_destination = args.host_destination
 
+    with open(args.gpg_pass) as passfile:
+        gpg_pass = passfile.readlines()[0]
+
     if args.telegram_notifications:
         tclient = TeleGramClient(args.telegram_bot_token, args.telegram_chat_id)
     else:
@@ -131,7 +142,7 @@ def run_backup():
 
     rootlogger.info(f"Starting duplicity backup of {backup_source} to {backup_destination}")
 
-    output = run_duplicity_backup(gpg_key, backup_source, backup_destination, rootlogger)
+    output = run_duplicity_backup(gpg_key, gpg_pass, backup_source, backup_destination, rootlogger)
 
     output.wait()
 
