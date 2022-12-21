@@ -136,12 +136,12 @@ def run_backup():
     output.wait()
 
     if output.poll() == 0:
-        rootlogger.info("Backup complete! :)")
+        rootlogger.info(f"Backup to {backup_destination} complete! :)")
     else:
         rootlogger.error("Backup Failed!")
         log_subprocess_error(output.stderr, rootlogger)
         tclient.send_telegram_message(
-            f"[{hostname}]: Backup failed! Inspect the logs on the host. Logs are stored in {log_path}")
+            f"[{hostname}]: Backup to {backup_destination} failed! Inspect the logs on the host. Logs are stored in {log_path}")
         sys.exit(1)
 
 
