@@ -68,9 +68,9 @@ def parse_backup_args():
                                                  'Writes encrypted duplicty, maintains rotating logs of the progress '
                                                  'and notifies via telegram upon error')
 
-    parser.add_argument('gpg-key', action='store', help='gpg key to encrypt the backup with')
+    parser.add_argument('gpg_key', action='store', help='gpg key to encrypt the backup with')
     parser.add_argument('source', action='store', help='the directory to back up')
-    parser.add_argument('host-destination', action='store', help='the host to backup to and the destination. In the'
+    parser.add_argument('host_destination', action='store', help='the host to backup to and the destination. In the'
                                                                  'format used by duplicity, for example: '
                                                                  'sftp://user@host:port/path')
 
