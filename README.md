@@ -22,6 +22,12 @@ The following options are available:
 ```
   -l LOG_DIR, --log-dir LOG_DIR
                         the directory to save logs to. Defaults to source/.backup-logs/
+  --skip-mount-verification
+                        Do not verify that the backup source or target is mounted. Set this if you are backing up a 
+                        folder rather than an entire drive. 
+                        If this is Not set then the script will verify if the location is mounted 
+                        or not and exit if it isnt. This makes sure that a backup of an empty folder is not done if a 
+                        drive is not mounted.
   -t, --telegram-notifications
                         send notifications about errors via telegram. Requires a telegram bot token 
                         and a chat-id to be specified. Defaults to false.
