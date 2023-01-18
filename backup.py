@@ -100,12 +100,9 @@ def parse_backup_args():
     parser.add_argument('-l', '--log-dir', action='store', help='the directory to save logs to. Defaults to '
                                                                 'source/.backup-logs/'
                         )
-    parser.add_argument('--skip-source-mount-verification', action='store_true',
-                        help='Do not verify that the backup source is mounted. Set this if you are backing up a folder '
-                             'rather than an entire drive.')
-
-    parser.add_argument('--skip-target-mount-verification', action='store_true',
-                        help='Do not verify that the backup target is mounted.')
+    parser.add_argument('--skip-mount-verification', action='store_true',
+                        help='Do not verify that the backup source and target are mounted. Set this if you are backing '
+                             'up a folder rather than an entire drive.')
 
     parser.add_argument('-t', '--telegram-notifications',
                         action='store_true',
@@ -143,8 +140,7 @@ def run_backup():
 
     backup_source = args.source
     backup_destination = args.destination
-    verify_source_mount = not args.skip_source_mount_verification
-    verify_target_mount = not args.skip_target_mount_verification
+    verify_mount = not args.skip_mount_verification
 
     if args.telegram_notifications:
         tclient = TeleGramClient(args.telegram_bot_token, args.telegram_chat_id)
@@ -159,12 +155,12 @@ def run_backup():
 
     ensure_only_one_execution(rootlogger, tclient)
 
-    if verify_source_mount and not verify_mounted(backup_source):
+    if verify_mount and not verify_mounted(backup_source):
         rootlogger.error("Backup source is not mounted. Cannot backup. Exiting")
         tclient.send_telegram_message(f"[{hostname}]: Backup source is not mounted. Cannot backup. Exiting")
         sys.exit(1)
 
-    if verify_target_mount and not verify_mounted(backup_destination):
+    if verify_mount and not verify_mounted(backup_destination):
         rootlogger.error("Backup target is not mounted. Cannot backup. Exiting")
         tclient.send_telegram_message(f"[{hostname}]: Backup target is not mounted. Cannot backup. Exiting")
         sys.exit(1)
