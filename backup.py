@@ -143,8 +143,8 @@ def run_backup():
 
     backup_source = args.source
     backup_destination = args.destination
-    verify_source_mount = args.skip_source_mount_verification
-    verify_target_mount = args.skip_target_mount_verification
+    verify_source_mount = not args.skip_source_mount_verification
+    verify_target_mount = not args.skip_target_mount_verification
 
     if args.telegram_notifications:
         tclient = TeleGramClient(args.telegram_bot_token, args.telegram_chat_id)
