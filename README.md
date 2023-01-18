@@ -28,5 +28,5 @@ The following options are available:
   -b TELEGRAM_BOT_TOKEN, --telegram-bot-token TELEGRAM_BOT_TOKEN
                         Token for sending messages as this bot
   -u TELEGRAM_CHAT_ID, --telegram-chat-id TELEGRAM_CHAT_ID
-                        Token for sending messages as this bot
+                        Chat ID for chat to send messages to
 ```
