@@ -7,7 +7,7 @@ This wrapper requires rdiff-backup to be installed on the target system. See htt
 Any other dependencies are installed using pip
 
 ```
-python3 -m pip install requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 ## Usage
